@@ -18,7 +18,7 @@ Non-paired reads are not currently supported.
 #### 2. Create an index for the reference genome.
 
 #### 3. Prepare configuration file. 
-Modify the example `main.config` file. The most important parameter is the memory for the bwa_mem process. 
+Modify the example `main.config` file. The most important parameters are the cpus and memory for the bwa_mem process. 
 
 #### 4. Execute the pipeline with:
 ```
