@@ -10,15 +10,9 @@ process download {
         tuple val(sample), val(run), val(read1), val(read2), val(md5_1), val(md5_2)
 
     output:
-        tuple val(sample), val(run), path("*.fq.gz")
+        tuple val(sample), val(run), path("*_1.fq.gz"), path("*_2.fq.gz")
 
     script:
-    if (read2.length() == 0)
-    """
-    ascp -l $params.ascp_rate_limit -v -k 3 -T -P 33001 -i $params.ascp_key_path era-fasp@${read1} ${run}.fq.gz
-    echo "$md5_1 ${run}.fq.gz" | md5sum -c -
-    """
-    else
     """
     ascp -l $params.ascp_rate_limit -v -k 3 -T -P 33001 -i $params.ascp_key_path era-fasp@${read1} ${run}_1.fq.gz
     echo "$md5_1 ${run}_1.fq.gz" | md5sum -c -
@@ -28,7 +22,7 @@ process download {
 
     stub:
     """
-    touch ${run}.fq.gz
+    touch ${run}_1.fq.gz ${run}_2.fq.gz
     """
 }
 
@@ -37,21 +31,15 @@ process fastp {
     errorStrategy "ignore"
 
     input:
-    tuple val(sample), val(run), path(reads)
+    tuple val(sample), val(run), path(read1), path(read2)
 
     output:
     tuple val(sample), val(run), path("${run}_1.trimmed.fq.gz"), path("${run}_2.trimmed.fq.gz"), emit: trimmed
     path("*.fastp_stats.json"), emit: log
 
     script:
-    if (reads.size() == 0)
     """
-    fastp --interleaved_in --thread $task.cpus --in1 $read --out1 ${run}_1.trimmed.fq.gz \
-    --out2 ${run}_2.trimmed.fq.gz --json ${run}.fastp_stats.json 
-    """
-    else:
-    """
-    fastp --thread $task.cpus --in1 ${read[0]} --in2 ${read[1]} --out1 ${run}_1.trimmed.fq.gz \
+    fastp --thread $task.cpus --in1 ${read1} --in2 ${read2} --out1 ${run}_1.trimmed.fq.gz \
     --out2 ${run}_2.trimmed.fq.gz --json ${run}.fastp_stats.json 
     """
 
