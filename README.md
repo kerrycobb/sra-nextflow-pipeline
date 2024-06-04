@@ -1,6 +1,5 @@
 # Nextflow Pipeline for SRA Data
-Download with `ascp`, trim with `fastp`, quality check with `fastqc`, and map SRA reads to a reference genome with `bwa-mem2`.
-Multiple runs for a single sample are merged at the end into a single `.bam` file.
+Download with `ascp`, trim with `fastp`, quality check with `fastqc`, map SRA reads to a reference genome with `bwa-mem2`, sort bam with `samtools` and then merge multiple runs for a single sample into a single `.bam` if necessary.
 
 ## Usage 
 
@@ -9,11 +8,9 @@ Multiple runs for a single sample are merged at the end into a single `.bam` fil
 |sample_accession|run_accession|read1_url|read2_url|read1_md5|read2_md5|
 |----------------|-------------|---------|---------|---------|---------|
 |SAMN12345|SRR12345|fasp.sra.ebi.ac.uk:...|fasp.sra.ebi.ac.uk:...|\<checksum>|\<checksum>|
-|SAMN12345|SRR12345|fasp.sra.ebi.ac.uk:...| |\<checksum>| |
 
 The urls for read 1 and read 2 should be `ascp` download urls.
-If paired reads are in interleaved format, there should only be an entry for read1_url.  
-Non-paired reads are not currently supported.
+Unpaired reads are not supported.
 
 #### 2. Create an index for the reference genome.
 
