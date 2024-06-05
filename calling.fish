@@ -1,0 +1,9 @@
+set basedir "/mnt/scratch/smithlab/cobb/bears"
+set workdir "$basedir/nf-call"
+set outdir "$basedir/variants"
+set reference "$basedir/brown-bear-genome/GCF_023065955.2_UrsArc2.0_genomic.fna"
+set bamfiles "$basedir/mapped/*.bam"
+set scaffolds "/mnt/home/kc2824/bears/data/selected-scaffolds.txt" 
+
+sub -n calling -w "nextflow -config calling.config run -resume -work-dir $workdir calling.nf "\
+  "--outdir $outdir --reference $reference --scaffold $scaffolds --bamfiles $bamfiles"
