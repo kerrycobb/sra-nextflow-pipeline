@@ -113,7 +113,7 @@ process bwa_mem {
     """
 }
 
-process samtools_merge {
+process samtools_merge_index {
     tag {sample}
     errorStrategy "ignore"
     publishDir params.outdir, mode: "move", overwrite:true
@@ -122,28 +122,33 @@ process samtools_merge {
     tuple val(sample), path(runs)
 
     output:
-    path("${sample}.bam")
+    tuple val(sample), path("${sample}.bam", path("${sample}.bam.bai")
 
     script:
     if (runs.size() > 1)
     """
     samtools merge --threads $task.cpus -o ${sample}.bam $runs
+    samtools index @ $task.cpus ${sample}.bam 
     """
     else
     """
     mv $runs ${sample}.bam
+    samtools index @ $task.cpus ${sample}.bam 
     """
 
     stub:
     if ( runs.size() > 1 )
     """
     cat $runs > ${sample}.bam
+    touch ${sample}.bam.bai
     """
     else
     """
     mv $runs ${sample}.bam
+    touch ${sample}.bam.bai
     """
 }
+
 
 
 workflow  {
@@ -152,14 +157,12 @@ workflow  {
     fastp(download.out)
     fastqc(fastp.out.trimmed)
     bwa_mem(fastp.out.trimmed)
-    // Merge bam files by sample
+
+    // Merge bam files by sample and index bam file
     grouped = bwa_mem.out.map{ it -> tuple(it[0], it[2]) }.groupTuple()
-    samtools_merge(grouped)
-    // QC
-    Channel.empty()
-        .mix(fastqc.out)
-        .mix(fastp.out.log)
-        .collect()
-        .set { log_files }
+    samtools_merge_index(grouped)
+
+    // Collect all outputs and run QC
+    log_files = Channel.empty().mix(fastqc.out).mix(fastp.out.log).collect()
     multiqc(log_files)
 }
