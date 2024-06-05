@@ -23,7 +23,7 @@ Modify the example `mapping.config` and `calling.config` files.
 #### 4. Execute the mapping pipeline with:
 ```bash
 nextflow \
-  -config mapping.config \
+  -C mapping.config \
   run \
     -work-dir <WORKDIR PATH> \
     mapping.nf \
@@ -40,7 +40,7 @@ The `ascp_key_path` and `ascp_rate_limit` arguments are optional.
 #### 5. Execute the calling pipeline with:
 ```bash
 nextflow \
-  -config calling.config \
+  -C calling.config \
   run \
     -work-dir <WORKDIR PATH> \
     calling.nf \
