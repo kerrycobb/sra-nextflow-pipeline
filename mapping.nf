@@ -119,32 +119,32 @@ process samtools_merge_index {
     publishDir params.outdir, mode: "move", overwrite:true
 
     input: 
-    tuple val(sample), path(runs)
+    tuple val(sample), path(bam_files)
 
     output:
-    tuple val(sample), path("${sample}.bam", path("${sample}.bam.bai")
+    tuple val(sample), path("${sample}.bam"), path("${sample}.bam.bai")
 
     script:
     if (runs.size() > 1)
     """
-    samtools merge --threads $task.cpus -o ${sample}.bam $runs
+    samtools merge --threads $task.cpus -o ${sample}.bam $bam_files
     samtools index @ $task.cpus ${sample}.bam 
     """
     else
     """
-    mv $runs ${sample}.bam
+    mv $bam_files ${sample}.bam
     samtools index @ $task.cpus ${sample}.bam 
     """
 
     stub:
-    if ( runs.size() > 1 )
+    if ( bam_files.size() > 1 )
     """
-    cat $runs > ${sample}.bam
+    cat $bam_files > ${sample}.bam
     touch ${sample}.bam.bai
     """
     else
     """
-    mv $runs ${sample}.bam
+    mv $bam_files ${sample}.bam
     touch ${sample}.bam.bai
     """
 }

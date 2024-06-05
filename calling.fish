@@ -5,5 +5,5 @@ set reference "$basedir/brown-bear-genome/GCF_023065955.2_UrsArc2.0_genomic.fna"
 set bamfiles "$basedir/mapped/*.bam"
 set scaffolds "/mnt/home/kc2824/bears/data/selected-scaffolds.txt" 
 
-sub -n calling -w "nextflow -config calling.config run -resume -work-dir $workdir calling.nf "\
-  "--outdir $outdir --reference $reference --scaffold $scaffolds --bamfiles $bamfiles"
+sub -n calling -w "nextflow -C calling.config run -w $workdir calling.nf "\
+  "--outdir $outdir --reference $reference --scaffolds $scaffolds --bamfiles $bamfiles"
