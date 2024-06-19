@@ -15,7 +15,8 @@ process variant_call {
     -Ou \
     --skip-indels \
     --ignore-RG \
-    -d 500 \
+    -d 250 \
+    -a "DP AD" \
     --region ${scaffold} \
     --threads ${task.cpus} \
     --fasta-ref ${params.reference} \

@@ -125,7 +125,7 @@ process samtools_merge_index {
     tuple val(sample), path("${sample}.bam"), path("${sample}.bam.bai")
 
     script:
-    if (runs.size() > 1)
+    if (bam_files.size() > 1)
     """
     samtools merge --threads $task.cpus -o ${sample}.bam $bam_files
     samtools index @ $task.cpus ${sample}.bam 
@@ -159,7 +159,7 @@ workflow  {
     bwa_mem(fastp.out.trimmed)
 
     // Merge bam files by sample and index bam file
-    grouped = bwa_mem.out.map{ it -> tuple(it[0], it[2]) }.groupTuple()
+    grouped = bwa_mem.out.map{ it -> tuple(it[0], it[2]) }.groupTuple().view()
     samtools_merge_index(grouped)
 
     // Collect all outputs and run QC
